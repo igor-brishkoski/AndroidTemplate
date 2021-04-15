@@ -1,0 +1,10 @@
+[versions]
+extjunit = "1.1.2"
+espressocore = "3.3.0"
+
+[libraries]
+extjunit = { group = "androidx.test.ext", name = "junit", version.ref = "extjunit" }
+espressocore = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressocore" }
+
+[bundles]
+androidTestLibsBundle = ["extjunit", "espressocore"]

@@ -7,21 +7,24 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 
-//    versionCatalogs {
-//        create("libs") {
-//            version("coroutines", "1.4.2")
-//            version("core-ktx","1.3.2")
-//
-//
-//            alias("coroutines-core").to("org.jetbrains.kotlinx", "kotlinx-coroutines-core").versionRef("coroutines")
-//            alias("core-ktx").to()
-//        }
-//    }
     versionCatalogs {
-        create("lib") {
-            from(files("gradle/libs.versions.toml"))
+        create("libraries") {
+            from(files("gradle/libraries.toml"))
+        }
+    }
+
+    versionCatalogs {
+        create("testLibraries") {
+            from(files("gradle/testLibraries.toml"))
+        }
+    }
+
+    versionCatalogs {
+        create("androidTestLibraries") {
+            from(files("gradle/androidTestLibraries.toml"))
         }
     }
 }
+
 rootProject.name = "AndroidTemplate"
 include(":app")

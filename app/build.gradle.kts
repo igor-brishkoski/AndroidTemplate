@@ -37,11 +37,12 @@ android {
 
 dependencies {
 
-    implementation(lib.corektx)
-    implementation(lib.appcompat)
-    implementation(lib.material)
-    implementation(lib.constraintlayout)
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    implementation(libraries.corektx)
+    implementation(libraries.appcompat)
+    implementation(libraries.material)
+    implementation(libraries.constraintlayout)
+
+    testImplementation(testLibraries.junit)
+
+    androidTestImplementation(androidTestLibraries.bundles.androidTestLibsBundle)
 }
