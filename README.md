@@ -1,0 +1,3 @@
+- Add base build gradle script for android libs
+- Add base build gradle script for java libs
+- Versioning tagging and naming system
