@@ -1,13 +1,21 @@
+import com.android.build.api.dsl.ApkSigningConfig
+import com.android.build.api.dsl.ApplicationProductFlavor
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.android.build.gradle.internal.dsl.SigningConfig
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
     namespace = "com.example.baseapp"
     compileSdk = libs.versions.compileSdk.get().toInt()
+    buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.example.baseapp"
@@ -20,26 +28,9 @@ android {
     }
 
     signingConfigs {
-        create("rolling") {
-            storeFile = file("${rootDir}/keys/rolling-keystore.jks")
-            storePassword = "rolling-keystore"
-            keyAlias = "rolling-key"
-            keyPassword = "rolling"
-        }
-
-        create("staging") {
-            storeFile = file("${rootDir}/keys/staging-keystore.jks")
-            storePassword = "staging-keystore"
-            keyAlias = "staging-key"
-            keyPassword = "staging"
-        }
-
-        create("production") {
-            storeFile = file("${rootDir}/keys/production-keystore.jks")
-            storePassword = "production-keystore"
-            keyAlias = "production-key"
-            keyPassword = "production"
-        }
+        createSigningConfig("rolling")
+        createSigningConfig("staging")
+        createSigningConfig("production")
     }
 
     buildTypes {
@@ -60,27 +51,10 @@ android {
 
     flavorDimensions += "environment"
     productFlavors {
-        create("devel") {
-            dimension = "environment"
-            applicationIdSuffix = ".devel"
-            versionNameSuffix = " Devel"
-        }
-        create("rolling") {
-            dimension = "environment"
-            applicationIdSuffix = ".rolling"
-            versionNameSuffix = " Rolling"
-            signingConfig = signingConfigs["rolling"]
-        }
-        create("staging") {
-            dimension = "environment"
-            applicationIdSuffix = ".staging"
-            versionNameSuffix = " Staging"
-            signingConfig = signingConfigs["staging"]
-        }
-        create("production") {
-            dimension = "environment"
-            signingConfig = signingConfigs["production"]
-        }
+        createFlavor("devel", signingConfigs)
+        createFlavor("rolling", signingConfigs)
+        createFlavor("staging", signingConfigs)
+        createFlavor("production", signingConfigs)
     }
 
     compileOptions {
@@ -102,6 +76,49 @@ androidComponents {
             // Gradle ignores any variants that satisfy the conditions above.
             variantBuilder.enable = false
         }
+    }
+}
+
+fun NamedDomainObjectContainer<ApplicationProductFlavor>.createFlavor(
+    name: String,
+    signingConfigs:
+    NamedDomainObjectContainer<SigningConfig>,
+) {
+    val propsList = listOf(
+        "BUILD_CONFIG_BASE_URL",
+    )
+
+    val props = gradleLocalProperties(rootProject.file("properties/$name"), project.providers)
+
+    create(name) {
+        dimension = "environment"
+        applicationIdSuffix = props.getProperty("APPLICATION_ID_SUFFIX")
+        versionNameSuffix = props.getProperty("APPLICATION_VERSION_SUFFIX")
+
+        for (propName in propsList) {
+            buildConfigField(
+                "String",
+                propName,
+                props.getProperty(propName),
+            )
+        }
+
+        if (name != "devel") {
+            signingConfig = signingConfigs[name]
+        }
+    }
+}
+
+fun NamedDomainObjectContainer<out ApkSigningConfig>.createSigningConfig(
+    name: String,
+) {
+    val props = gradleLocalProperties(rootProject.file("properties/$name"), project.providers)
+
+    create(name) {
+        storeFile = file("${rootDir}/keys/${name}-keystore.jks")
+        storePassword = props.getProperty("KEYSTORE_PASSWORD")
+        keyAlias = props.getProperty("KEY_ALIAS")
+        keyPassword = props.getProperty("KEY_PASSWORD")
     }
 }
 
@@ -128,6 +145,10 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.auth)
+
+    // hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
 
