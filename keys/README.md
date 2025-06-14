@@ -1,22 +1,7 @@
 TODO Replace they keys for new app if needed (and obviously don't commit sensitive information)
 
-KeyStore
-name = rolling-keystore.jks
-pass = rolling-keystore
-Key
-alias = rolling-key
-pass = rolling
-
-KeyStore
-name = staging-keystore.jks
-pass = staging-keystore
-Key
-alias = staging-key
-pass = staging
-
-KeyStore
-name = production-keystore.jks
-pass = production-keystore
-Key
-alias = production-key
-pass = production
+| Env     | Values                                                                                                                                  |
+|---------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Rolling | Keystore = rolling-keystore<br/>Keystore Password = rolling-keystore<br/>Key Alias = rolling-key<br/>Key Password = rolling             |
+| Staging | Keystore = staging-keystore<br/>Keystore Password = staging-keystore<br/>Key Alias = staging-key<br/>Key Password = staging             |
+| Prod    | Keystore = production-keystore<br/>Keystore Password = production-keystore<br/>Key Alias = production-key<br/>Key Password = production |
