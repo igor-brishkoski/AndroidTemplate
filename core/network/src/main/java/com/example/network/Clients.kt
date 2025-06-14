@@ -25,12 +25,12 @@ import kotlinx.serialization.json.Json
 private const val NETWORK_TIME_OUT = 6_000L
 
 object Clients {
-    fun ktorClient(): HttpClient {
+    fun ktorClientLogging(): HttpClient {
         return HttpClient(OkHttp) {
             install(ContentNegotiation) {
                 json(
                     Json {
-                        prettyPrint = true
+                        // prettyPrint = true
                         isLenient = true
                         useAlternativeNames = true
                         ignoreUnknownKeys = true
@@ -68,6 +68,47 @@ object Clients {
             install(ResponseObserver) {
                 onResponse { response ->
                     Log.d("HTTP status:", "${response.status.value}")
+                }
+            }
+
+            install(DefaultRequest) {
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+            }
+
+            defaultRequest {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+            }
+        }
+    }
+
+    fun ktorClientNoLogging(): HttpClient {
+        return HttpClient(OkHttp) {
+            install(ContentNegotiation) {
+                json(
+                    Json {
+                        isLenient = true
+                        useAlternativeNames = true
+                        ignoreUnknownKeys = true
+                        encodeDefaults = false
+                    }
+                )
+            }
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = NETWORK_TIME_OUT
+                connectTimeoutMillis = NETWORK_TIME_OUT
+                socketTimeoutMillis = NETWORK_TIME_OUT
+            }
+
+            install(Auth) {
+                bearer {
+                    loadTokens {
+                        BearerTokens(
+                            accessToken = "load/from/storage",
+                            refreshToken = "load/from/storage"
+                        )
+                    }
                 }
             }
 

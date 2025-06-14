@@ -17,4 +17,5 @@ abstract class SourceModule {
 
     @Binds
     abstract fun bindUserLocalSource(impl: UserLocalSourceImpl): UserLocalSource
+
 }

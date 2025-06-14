@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
+import com.example.data.models.User
 import com.example.data.repos.UserRepository
 import com.example.network.Clients
 import com.example.ui.theme.BaseAppTheme
@@ -20,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.ktor.client.request.get
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,15 +32,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         Log.d("MainActivity", "onCreate: ${BuildConfig.BUILD_CONFIG_BASE_URL}")
         runBlocking {
-            Clients.ktorClient().get(BuildConfig.BUILD_CONFIG_BASE_URL+"/posts") {
-                Log.d("MainActivity", "onCreate: ${this.body}")
-            }
+            // Clients.ktorClient().get(BuildConfig.BUILD_CONFIG_BASE_URL+"users") {
+            //     // Log.d("MainActivity", "onCreate: ${this.body}")
+            //     // val users: List<User> = Json.decodeFromString(body)
+            //     // Log.d("MainActivity", "onCreate: $users")
+            // }
         }
 
         lifecycleScope.launch {
-            userRepo.getUser("test").collect {
-                Log.d("MainActivity", "onCreate: $it")
-            }
+            val users = userRepo.getUsers()
+            Log.d("MainActivity", "onCreate: ${users.first()}")
         }
         setContent {
             BaseAppTheme {
