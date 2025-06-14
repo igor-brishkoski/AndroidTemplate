@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -33,11 +34,36 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    flavorDimensions += "environment"
+    productFlavors {
+        create("devel") {
+            dimension = "environment"
+        }
+        create("rolling") {
+            dimension = "environment"
+        }
+        create("staging") {
+            dimension = "environment"
+        }
+        create("production") {
+            dimension = "environment"
+        }
+    }
+
+    room {
+        schemaDirectory("devel", "$rootDir/schemas/devel")
+        schemaDirectory("rolling", "$rootDir/schemas/rolling")
+        schemaDirectory("staging", "$rootDir/schemas/staging")
+        schemaDirectory("production", "$rootDir/schemas/production")
+        schemaDirectory("$rootDir/schemas")
+    }
 }
 
 dependencies {
 
     implementation(project(":core:network"))
+    implementation(project(":core:utils"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -48,7 +74,13 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
 
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
     testImplementation(libs.junit)
+    testImplementation(libs.androidx.room.testing)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
