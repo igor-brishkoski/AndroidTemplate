@@ -13,15 +13,6 @@ echo 'BUILD_CONFIG_BASE_URL="https://jsonplaceholder.typicode.com/"'
 } >> properties/devel/local.properties
 
 {
-echo 'APPLICATION_ID_SUFFIX=.rolling'
-echo 'APPLICATION_VERSION_SUFFIX=-rolling'
-echo 'KEYSTORE_PASSWORD=rolling-keystore'
-echo 'KEY_ALIAS=rolling-key'
-echo 'KEY_PASSWORD=rolling'
-echo 'BUILD_CONFIG_BASE_URL="https://jsonplaceholder.typicode.com/"'
-} >> properties/rolling/local.properties
-
-{
 echo 'APPLICATION_ID_SUFFIX=".staging"'
 echo 'APPLICATION_VERSION_SUFFIX="-staging"'
 echo 'KEYSTORE_PASSWORD=staging-keystore'

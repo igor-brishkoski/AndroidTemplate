@@ -52,7 +52,6 @@ android {
     flavorDimensions += "environment"
     productFlavors {
         createFlavor("devel", signingConfigs)
-        createFlavor("rolling", signingConfigs)
         createFlavor("staging", signingConfigs)
         createFlavor("production", signingConfigs)
     }
@@ -128,7 +127,6 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
-    implementation(project(":core:di"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
