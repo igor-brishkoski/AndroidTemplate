@@ -1,14 +1,13 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.room)
 }
 
 android {
-    namespace = "com.example.data"
+    namespace = "com.example.home"
     compileSdk = 36
 
     defaultConfig {
@@ -35,48 +34,38 @@ android {
         jvmTarget = "17"
     }
 
-    // flavorDimensions += "environment"
-    // productFlavors {
-    //     create("devel") {
-    //         dimension = "environment"
-    //     }
-    //     create("staging") {
-    //         dimension = "environment"
-    //     }
-    //     create("production") {
-    //         dimension = "environment"
-    //     }
-    // }
-
-    room {
-        // schemaDirectory("devel", "$rootDir/schemas/devel")
-        // schemaDirectory("staging", "$rootDir/schemas/staging")
-        // schemaDirectory("production", "$rootDir/schemas/production")
-        schemaDirectory("$rootDir/schemas")
+    buildFeatures {
+        compose = true
     }
 }
 
 dependencies {
-
-    implementation(project(":core:network"))
     implementation(project(":core:utils"))
+    implementation(project(":core:data"))
+    implementation(project(":core:ui"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    implementation(platform(libs.ktor.bom))
-    implementation(libs.ktor.client.okhttp)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.adaptive)
+    implementation(libs.kotlinx.serialization.core)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
-
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     testImplementation(libs.junit)
-    testImplementation(libs.androidx.room.testing)
-
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

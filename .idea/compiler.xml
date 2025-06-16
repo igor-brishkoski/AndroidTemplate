@@ -7,6 +7,7 @@
       <module name="BaseApp.buildSrc.test" target="21" />
       <module name="BaseApp.core.di" target="21" />
       <module name="BaseApp.data" target="21" />
+      <module name="BaseApp.userdetails" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>

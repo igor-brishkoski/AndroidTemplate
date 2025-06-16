@@ -5,70 +5,76 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.lifecycleScope
-import com.example.data.repos.UserRepository
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entry
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.example.home.HomeScreenContainer
+import com.example.home.HomeViewModel
+import com.example.userdetails.UserDetailsScreenContainer
+import com.example.userdetails.UserDetailsViewModel
 import com.example.ui.theme.BaseAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+
+private data object Home
+private data class UserDetails(val id: Int)
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var userRepo: UserRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         Log.d("MainActivity", "onCreate: ${BuildConfig.BUILD_CONFIG_BASE_URL}")
 
-        lifecycleScope.launch {
-            userRepo.getUsers().collect {
-                if (it.isEmpty()) {
-                    userRepo.refreshUsers()
-                }
-                Log.d("MainActivity", "onCreate: ${it.count()}")
+        setContent {
+            val backStack = remember { mutableStateListOf<Any>(Home) }
 
-                setContent {
-                    BaseAppTheme {
-                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                            Column(
-                                modifier = Modifier
-                                    .verticalScroll(rememberScrollState())
-                            ) {
-                                for (user in it) {
-                                    Greeting(user.name, modifier = Modifier.padding(innerPadding))
-                                }
+            BaseAppTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    NavDisplay(
+                        backStack = backStack,
+                        onBack = { backStack.removeAt(backStack.lastIndex) },
+                        entryDecorators = listOf(
+                            rememberSceneSetupNavEntryDecorator(),
+                            rememberSavedStateNavEntryDecorator(),
+                            rememberViewModelStoreNavEntryDecorator()
+                        ),
+                        modifier = Modifier.padding(innerPadding),
+                        entryProvider = entryProvider {
+                            entry<Home> {
+                                val viewModel = hiltViewModel<HomeViewModel, HomeViewModel.Factory>(
+                                    creationCallback = { factory ->
+                                        factory.create()
+                                    }
+                                )
+                                HomeScreenContainer(viewModel, onUserClick = { id ->
+                                    backStack.add(UserDetails(id))
+                                })
+                            }
+
+                            entry<UserDetails> { key ->
+                                val viewModel =
+                                    hiltViewModel<UserDetailsViewModel, UserDetailsViewModel.Factory>(
+                                        creationCallback = { factory ->
+                                            factory.create(key.id)
+                                        }
+                                    )
+                                UserDetailsScreenContainer(viewModel)
                             }
                         }
-                    }
+                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BaseAppTheme {
-        Greeting("Android")
     }
 }

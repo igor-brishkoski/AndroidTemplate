@@ -1,7 +1,6 @@
 #!/bin/bash
 
 rm properties/devel/local.properties
-rm properties/rolling/local.properties
 rm properties/staging/local.properties
 rm properties/production/local.properties
 

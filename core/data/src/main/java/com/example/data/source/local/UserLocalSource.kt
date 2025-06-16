@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface UserLocalSource {
+    suspend fun getUser(id: Int): User?
     fun getUsers(): Flow<List<User>>
     suspend fun insertUsers(users: List<User>)
 }
@@ -13,6 +14,10 @@ interface UserLocalSource {
 class UserLocalSourceImpl @Inject constructor(
     private val userDao: UserDao,
 ) : UserLocalSource {
+    override suspend fun getUser(id: Int): User? {
+        return userDao.findById(id)
+    }
+
     override fun getUsers(): Flow<List<User>> {
         return userDao.getAll()
     }

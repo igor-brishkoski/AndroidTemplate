@@ -28,7 +28,6 @@ android {
     }
 
     signingConfigs {
-        createSigningConfig("rolling")
         createSigningConfig("staging")
         createSigningConfig("production")
     }
@@ -128,6 +127,9 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:data"))
 
+    implementation(project(":features:home"))
+    implementation(project(":features:userdetails"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
@@ -137,6 +139,12 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+    implementation(libs.androidx.navigation3.adaptive)
+    implementation(libs.kotlinx.serialization.core)
 
     implementation(platform(libs.ktor.bom))
     implementation(libs.ktor.client.okhttp)
@@ -149,6 +157,7 @@ dependencies {
     // hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     testImplementation(libs.junit)
 
